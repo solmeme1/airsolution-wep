@@ -1,0 +1,727 @@
+<!doctype html>
+<html lang="ko">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>토토 분석기</title>
+<style>
+:root{
+  --bg:#f5f6f8; --card:#fff; --ink:#1b1f24; --sub:#5b6470; --line:#e2e5ea;
+  --accent:#2457d6; --accent-ink:#fff; --good:#13804b; --good-bg:#e5f5ec;
+  --bad:#c0362c; --bad-bg:#fbe9e7; --warn:#9a6700; --warn-bg:#fff4d6; --chip:#eef1f6;
+}
+@media (prefers-color-scheme: dark){
+  :root:not([data-theme="light"]){
+    --bg:#111418; --card:#1a1e24; --ink:#e7eaee; --sub:#9aa3ae; --line:#2b313a;
+    --accent:#6f9bff; --accent-ink:#0d1117; --good:#4fc787; --good-bg:#14301f;
+    --bad:#ff7b6e; --bad-bg:#3a1714; --warn:#e6b84a; --warn-bg:#3a2e0e; --chip:#242a33;
+  }
+}
+:root[data-theme="dark"]{
+  --bg:#111418; --card:#1a1e24; --ink:#e7eaee; --sub:#9aa3ae; --line:#2b313a;
+  --accent:#6f9bff; --accent-ink:#0d1117; --good:#4fc787; --good-bg:#14301f;
+  --bad:#ff7b6e; --bad-bg:#3a1714; --warn:#e6b84a; --warn-bg:#3a2e0e; --chip:#242a33;
+}
+*{box-sizing:border-box}
+body{margin:0;background:var(--bg);color:var(--ink);font:15px/1.5 -apple-system,BlinkMacSystemFont,"Apple SD Gothic Neo","Malgun Gothic","Noto Sans KR",sans-serif}
+header{position:sticky;top:0;z-index:5;background:var(--card);border-bottom:1px solid var(--line)}
+.top{display:flex;align-items:center;gap:12px;padding:12px 16px;max-width:1100px;margin:0 auto}
+.top h1{font-size:17px;margin:0;flex:1}
+.budget{font-size:13px;color:var(--sub);text-align:right}
+.budget b{color:var(--ink);font-variant-numeric:tabular-nums}
+nav{display:flex;gap:4px;overflow-x:auto;padding:0 12px;max-width:1100px;margin:0 auto}
+nav button{border:0;background:none;color:var(--sub);padding:10px 12px;font:inherit;font-weight:600;border-bottom:2px solid transparent;cursor:pointer;white-space:nowrap}
+nav button.on{color:var(--accent);border-color:var(--accent)}
+main{max-width:1100px;margin:0 auto;padding:16px}
+section{display:none}
+section.on{display:block}
+.card{background:var(--card);border:1px solid var(--line);border-radius:12px;padding:14px 16px;margin-bottom:12px}
+.card h2{font-size:16px;margin:0 0 8px}
+.card h3{font-size:14px;margin:12px 0 6px;color:var(--sub)}
+.muted{color:var(--sub);font-size:13px}
+.row{display:flex;gap:8px;flex-wrap:wrap;align-items:center}
+.grow{flex:1}
+button.btn{border:1px solid var(--line);background:var(--card);color:var(--ink);border-radius:8px;padding:8px 12px;font:inherit;font-weight:600;cursor:pointer}
+button.btn.primary{background:var(--accent);color:var(--accent-ink);border-color:var(--accent)}
+button.btn.small{padding:4px 8px;font-size:13px}
+textarea,input,select{font:inherit;color:var(--ink);background:var(--bg);border:1px solid var(--line);border-radius:8px;padding:8px}
+textarea{width:100%;min-height:110px;font-size:13px}
+input[type=number]{width:110px}
+.chip{display:inline-block;background:var(--chip);border-radius:999px;padding:1px 8px;font-size:12px;color:var(--sub);margin-right:4px}
+.chip.good{background:var(--good-bg);color:var(--good)}
+.chip.bad{background:var(--bad-bg);color:var(--bad)}
+.chip.warn{background:var(--warn-bg);color:var(--warn)}
+.notice{background:var(--warn-bg);color:var(--warn);border-radius:10px;padding:10px 12px;font-size:13px;margin-bottom:12px}
+table{width:100%;border-collapse:collapse;font-size:13px;font-variant-numeric:tabular-nums}
+th,td{padding:6px 6px;border-bottom:1px solid var(--line);text-align:right;white-space:nowrap}
+th:first-child,td:first-child{text-align:left}
+th{color:var(--sub);font-weight:600}
+.scroll{overflow-x:auto}
+.match{cursor:pointer}
+.match .teams{font-weight:700}
+.prob{display:flex;height:8px;border-radius:4px;overflow:hidden;background:var(--chip);margin:6px 0}
+.prob i{display:block}
+.ph{background:var(--accent)} .pd{background:var(--sub)} .pa{background:var(--bad)}
+.detail{display:none;margin-top:10px;border-top:1px dashed var(--line);padding-top:10px}
+.match.open .detail{display:block}
+.grid2{display:grid;grid-template-columns:1fr 1fr;gap:12px}
+@media (max-width:640px){.grid2{grid-template-columns:1fr}.budget{font-size:12px}}
+.ev-pos{color:var(--good);font-weight:700}
+.ev-neg{color:var(--bad)}
+.ticket{border:1px solid var(--line);border-radius:10px;padding:10px 12px;margin-bottom:10px}
+.ticket .head{display:flex;justify-content:space-between;gap:8px;flex-wrap:wrap;font-weight:700}
+.marks{display:flex;gap:4px}
+.marks span{width:30px;text-align:center;border-radius:6px;padding:2px 0;background:var(--chip);color:var(--sub);font-weight:700;font-size:13px}
+.marks span.on{background:var(--accent);color:var(--accent-ink)}
+.stat{display:inline-block;margin-right:18px}
+.stat b{display:block;font-size:20px;font-variant-numeric:tabular-nums}
+label.set{display:flex;justify-content:space-between;align-items:center;gap:8px;padding:6px 0;border-bottom:1px solid var(--line)}
+</style>
+</head>
+<body>
+<header>
+  <div class="top">
+    <h1>토토 분석기</h1>
+    <div class="budget">오늘 사용 <b id="spentToday">0</b>원 / <b id="dailyCap">30,000</b>원<br><span id="dataStamp">데이터 없음</span></div>
+  </div>
+  <nav id="tabs">
+    <button data-tab="data" class="on">데이터</button>
+    <button data-tab="matches">경기 분석</button>
+    <button data-tab="proto">프로토 조합</button>
+    <button data-tab="toto">축구승무패</button>
+    <button data-tab="ledger">기록·손익</button>
+    <button data-tab="settings">설정</button>
+  </nav>
+</header>
+<main>
+
+<section id="data" class="on">
+  <div class="notice">분석은 확률 추정일 뿐 적중을 보장하지 않습니다. 환급률이 100% 미만이라 장기적으로는 손실이 나기 쉬우니, 하루 한도 안에서만 이용하세요.</div>
+  <div class="card">
+    <h2>수집 데이터 불러오기</h2>
+    <p class="muted">PC에서 <code>collect.py --serve</code> 로 열면 최신 데이터가 자동으로 불러와집니다. 휴대폰 등에서는 <code>latest.json</code> 파일을 직접 선택하세요.</p>
+    <div class="row">
+      <button class="btn primary" id="reloadBtn">최신 데이터 다시 불러오기</button>
+      <input type="file" id="fileIn" accept=".json,application/json">
+    </div>
+    <p class="muted" id="loadMsg"></p>
+  </div>
+  <div class="card">
+    <h2>직접 붙여넣기 (수집기 없이)</h2>
+    <p class="muted">베트맨 구매 화면의 경기표를 드래그해서 복사한 뒤 붙여넣으세요. 이 방식은 배당만 있고 라인업·부상·상대전적 분석은 빠집니다.</p>
+    <h3>프로토 승부식</h3>
+    <textarea id="pasteProto" placeholder="001	축구	EPL	10.26(일) 23:00	일반	맨체스U	vs	리버풀	2.85	3.30	2.20"></textarea>
+    <h3>축구승무패 (14경기)</h3>
+    <textarea id="pasteToto" placeholder="1	10.26(일) 23:00	EPL	맨체스U	vs	리버풀"></textarea>
+    <div class="row" style="margin-top:8px"><button class="btn primary" id="pasteBtn">붙여넣은 내용 분석</button></div>
+  </div>
+  <div class="card" id="unmatchedCard" style="display:none">
+    <h2>팀 매칭 실패</h2>
+    <p class="muted">아래 경기는 분석 데이터가 연결되지 않았습니다. <code>collector/team_alias.json</code>에 베트맨 팀명 → 영문 팀명을 추가하면 다음 수집부터 연결됩니다.</p>
+    <div id="unmatched" class="scroll"></div>
+  </div>
+</section>
+
+<section id="matches">
+  <div class="row" style="margin-bottom:10px">
+    <select id="matchFilter">
+      <option value="all">전체 경기</option>
+      <option value="value">가치 있는 선택만 (EV+)</option>
+      <option value="toto">승무패 경기만</option>
+    </select>
+    <span class="muted grow" id="matchCount"></span>
+  </div>
+  <div id="matchList"></div>
+</section>
+
+<section id="proto">
+  <div class="card">
+    <h2>프로토 승부식 추천 조합</h2>
+    <p class="muted" id="protoInfo"></p>
+    <div class="row">
+      <select id="strategy">
+        <option value="ev">가치(EV) 우선</option>
+        <option value="prob">적중률 우선</option>
+      </select>
+      <button class="btn" id="rebuildProto">다시 계산</button>
+    </div>
+  </div>
+  <div id="protoTickets"></div>
+  <div class="card">
+    <h3>후보 선택지</h3>
+    <div class="scroll" id="protoPool"></div>
+  </div>
+</section>
+
+<section id="toto">
+  <div class="card">
+    <h2>축구승무패 마킹 추천</h2>
+    <p class="muted" id="totoInfo"></p>
+    <div id="totoSummary"></div>
+  </div>
+  <div class="card scroll" id="totoTable"></div>
+</section>
+
+<section id="ledger">
+  <div class="card">
+    <h2>손익 요약</h2>
+    <div id="ledgerStats"></div>
+  </div>
+  <div class="card">
+    <h2>직접 기록 추가</h2>
+    <div class="row">
+      <select id="lgType"><option value="proto">프로토</option><option value="toto">승무패</option></select>
+      <input id="lgDesc" class="grow" placeholder="내용 (예: 맨유 승 + 울산 승)">
+      <input id="lgStake" type="number" step="1000" placeholder="금액">
+      <input id="lgOdds" type="number" step="0.01" placeholder="배당(선택)">
+      <button class="btn primary" id="lgAdd">추가</button>
+    </div>
+  </div>
+  <div class="card scroll" id="ledgerTable"></div>
+  <div class="card">
+    <div class="row">
+      <button class="btn" id="exportBtn">기록 내보내기(JSON)</button>
+      <label class="btn">기록 가져오기<input type="file" id="importIn" accept=".json" hidden></label>
+    </div>
+    <p class="muted">기록은 이 브라우저에만 저장됩니다. 브라우저 데이터를 지우면 사라지니 가끔 내보내기로 백업하세요.</p>
+  </div>
+</section>
+
+<section id="settings">
+  <div class="card">
+    <h2>예산</h2>
+    <label class="set">하루 한도(원)<input type="number" data-set="dailyBudget" step="1000"></label>
+    <label class="set">그중 프로토 배정(원)<input type="number" data-set="protoBudget" step="1000"></label>
+    <label class="set">승무패 1조합 가격(원)<input type="number" data-set="totoUnit" step="100"></label>
+    <p class="muted">승무패 배정 = 하루 한도 − 프로토 배정. 1조합 가격은 베트맨 구매 화면에서 확인해 맞춰주세요.</p>
+  </div>
+  <div class="card">
+    <h2>분석 모델</h2>
+    <label class="set">배당(시장) 반영 비율 0~1<input type="number" data-set="marketWeight" step="0.05" min="0" max="1"></label>
+    <label class="set">결장 1명당 득점 기대 감소<input type="number" data-set="injuryPenalty" step="0.005" min="0" max="0.1"></label>
+    <p class="muted">배당에는 시장 정보가 많이 반영돼 있어서 0.5~0.7 정도를 권장합니다. 0으로 하면 통계 모델만 사용합니다.</p>
+  </div>
+  <div class="card">
+    <h2>프로토 조합</h2>
+    <label class="set">최소 폴더<input type="number" data-set="minFold" min="1" max="10"></label>
+    <label class="set">최대 폴더<input type="number" data-set="maxFold" min="1" max="10"></label>
+    <label class="set">추천 장수<input type="number" data-set="nTickets" min="1" max="10"></label>
+    <label class="set">선택지 최소 확률<input type="number" data-set="minProb" step="0.05" min="0" max="1"></label>
+    <label class="set">선택지 최소 EV<input type="number" data-set="minEV" step="0.01"></label>
+  </div>
+  <div class="card">
+    <h2>화면</h2>
+    <label class="set">테마<select data-set="theme"><option value="auto">시스템</option><option value="light">밝게</option><option value="dark">어둡게</option></select></label>
+  </div>
+</section>
+</main>
+
+<script>
+"use strict";
+// ---------- 저장소 ----------
+const store = {
+  get(k, d){ try{ const v = localStorage.getItem(k); return v ? JSON.parse(v) : d; }catch(e){ return d; } },
+  set(k, v){ try{ localStorage.setItem(k, JSON.stringify(v)); }catch(e){} }
+};
+const DEFAULTS = {dailyBudget:30000, protoBudget:20000, totoUnit:1000, marketWeight:0.6, injuryPenalty:0.025,
+  minFold:2, maxFold:3, nTickets:3, minProb:0.3, minEV:0.02, strategy:"ev", theme:"auto"};
+let S = Object.assign({}, DEFAULTS, store.get("toto.settings", {}));
+let ledger = store.get("toto.ledger", []);
+let DATA = null;
+
+const $ = s => document.querySelector(s);
+const esc = s => String(s ?? "").replace(/[&<>"']/g, c => ({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[c]));
+const won = n => Math.round(n).toLocaleString("ko-KR");
+const pct = p => p == null ? "-" : (p*100).toFixed(1) + "%";
+const todayStr = () => { const d = new Date(); return `${d.getFullYear()}-${String(d.getMonth()+1).padStart(2,"0")}-${String(d.getDate()).padStart(2,"0")}`; };
+const OUT_LABEL = {home:"승", draw:"무", away:"패", under:"언더", over:"오버"};
+const MARKET_LABEL = {"1x2":"일반", handicap:"핸디캡", uo:"언더오버"};
+
+// ---------- 붙여넣기 파서 (collector/betman_parser.py 와 같은 규칙) ----------
+const ODDS_RE = /^\d{1,3}\.\d{2}$/;
+const SOCCER = ["축구","EPL","프리미어","라리가","세리에","분데스","리그앙","리그1","K리그","J리그","J1","J2","UCL","UEL","챔스","에레디비","MLS","챔피언십","A리그","포르투갈","스코틀","FA컵","월드컵","아시안컵","유로"];
+const OTHER = ["농구","야구","배구","NBA","KBL","MLB","KBO","NPB","V리그","WKBL","NHL","하키","골프"];
+function cellsOf(line){
+  const parts = line.includes("\t") ? line.split("\t") : line.includes("|") ? line.split("|") : line.split(/\s{2,}/);
+  return parts.map(s => s.trim()).filter(Boolean);
+}
+function kickoffOf(text, year){
+  const m = text.match(/(\d{1,2})[./-](\d{1,2})\s*(?:\([^)]*\))?\s*(\d{1,2}):(\d{2})/);
+  if(!m) return null;
+  const p = n => String(n).padStart(2,"0");
+  return `${year}-${p(m[1])}-${p(m[2])}T${p(m[3])}:${m[4]}`;
+}
+function cleanTeam(n){ return n.replace(/\s*(H|핸디캡?)\s*[+-]?\d+(\.\d)?\s*$/,"").replace(/\s*(U\/O|언더오버)\s*\d+(\.\d)?\s*$/,"").trim(); }
+function teamsOf(cells){
+  for(let i=1;i<cells.length-1;i++) if(["vs","v",":"].includes(cells[i].toLowerCase())) return [cells[i-1], cells[i+1]];
+  for(const c of cells) if(/\s(vs|VS|Vs)\s/.test(c)){ const [a,b] = c.split(/\s(?:vs|VS|Vs)\s/); return [cleanTeam(a), cleanTeam(b)]; }
+  return null;
+}
+function leagueOf(cells){
+  for(const c of cells){ const n = c.replace("축구","").trim(); if(n && c.length<=20 && SOCCER.some(h=>c.includes(h))) return n; }
+  return "";
+}
+function parseProto(text, year){
+  const out = [];
+  for(const raw of text.split(/\r?\n/)){
+    const cells = cellsOf(raw); if(cells.length < 4) continue;
+    const line = cells.join(" "); const teams = teamsOf(cells); if(!teams) continue;
+    const odds = cells.filter(c => ODDS_RE.test(c)).map(Number); if(odds.length < 2) continue;
+    if(OTHER.some(h => line.includes(h))) continue;
+    let market = "1x2", mline = null;
+    if(/U\/O|언더|오버/.test(line)){ market = "uo"; const m = line.replace(teams[0],"").replace(teams[1],"").match(/(\d+\.5)/); mline = m ? +m[1] : null; }
+    else if(/핸디|(^|\s)H\s*[+-]/.test(line)){ market = "handicap"; for(const c of cells){ const m = c.match(/(?:^|\s|H|핸디캡?)\s*([+-]\d+(?:\.\d)?)\s*$/); if(m && !ODDS_RE.test(c)){ mline = +m[1]; break; } } }
+    const o = market === "uo" ? {under:odds.at(-2), over:odds.at(-1)}
+      : odds.length >= 3 ? {home:odds.at(-3), draw:odds.at(-2), away:odds.at(-1)} : {home:odds.at(-2), away:odds.at(-1)};
+    const no = cells.find(c => /^\d{1,3}$/.test(c));
+    out.push({no: no ? +no : null, league: leagueOf(cells), kickoff: kickoffOf(line, year), home: teams[0], away: teams[1], market, line: mline, odds: o});
+  }
+  return out;
+}
+function parseToto(text, year){
+  const out = [], seen = new Set();
+  for(const raw of text.split(/\r?\n/)){
+    const cells = cellsOf(raw); if(cells.length < 3) continue;
+    const teams = teamsOf(cells); if(!teams) continue;
+    const nc = cells.find(c => /^\d{1,2}$/.test(c)); const no = nc ? +nc : null;
+    if(!no || no < 1 || no > 14 || seen.has(no)) continue; seen.add(no);
+    const pcts = cells.filter(c => /^\d{1,3}(\.\d+)?\s*%$/.test(c)).map(c => parseFloat(c));
+    out.push({no, league: leagueOf(cells), kickoff: kickoffOf(cells.join(" "), year), home: teams[0], away: teams[1],
+      votes: pcts.length >= 3 ? {home:pcts[0], draw:pcts[1], away:pcts[2]} : null});
+  }
+  return out.sort((a,b) => a.no - b.no);
+}
+
+// ---------- 확률 모델 ----------
+function pois(k, l){ let p = Math.exp(-l); for(let i=1;i<=k;i++) p *= l/i; return p; }
+function matrix(lh, la, max = 9){
+  const m = []; for(let i=0;i<=max;i++){ m[i] = []; for(let j=0;j<=max;j++) m[i][j] = pois(i,lh)*pois(j,la); } return m;
+}
+function fromMatrix(m, fn){ let s = 0; m.forEach((r,i) => r.forEach((p,j) => { if(fn(i,j)) s += p; })); return s; }
+const clamp = (x,a,b) => Math.max(a, Math.min(b, x));
+const pick = (...xs) => xs.find(x => x != null && !isNaN(x));
+function normalize(o){ const s = Object.values(o).reduce((a,b)=>a+b,0); const r = {}; for(const k in o) r[k] = o[k]/s; return r; }
+
+function missingCount(fx, side){
+  if(!fx.injuries) return 0;
+  const id = fx[side].id;
+  return fx.injuries.filter(i => i.team_id === id && /missing/i.test(i.type || "")).length;
+}
+
+// 경기 하나의 통계 모델 결과 (fixture 데이터가 없으면 null)
+function model(fx){
+  const pr = fx && fx.prediction; if(!pr) return null;
+  const h = pr.home, a = pr.away;
+  const hf = pick(h.gf.home, h.gf.total, h.last5.gf), ha = pick(h.ga.home, h.ga.total, h.last5.ga);
+  const af = pick(a.gf.away, a.gf.total, a.last5.gf), aa = pick(a.ga.away, a.ga.total, a.last5.ga);
+  if([hf,ha,af,aa].some(x => x == null)) return null;
+  let lh = (hf + aa)/2, la = (af + ha)/2;
+  const notes = [];
+  // 최근 5경기 폼 차이
+  if(h.last5.form != null && a.last5.form != null){
+    const shift = (h.last5.form - a.last5.form)/100 * 0.15;
+    lh *= 1 + shift; la *= 1 - shift;
+  }
+  // 결장자: 라인업이 나오면 실제 선발로 판단하므로 결장 보정은 그대로 두되 표시만
+  const mh = missingCount(fx, "home"), ma = missingCount(fx, "away");
+  const pen = S.injuryPenalty;
+  lh *= (1 - Math.min(0.15, pen*mh)) * (1 + Math.min(0.06, 0.4*pen*ma));
+  la *= (1 - Math.min(0.15, pen*ma)) * (1 + Math.min(0.06, 0.4*pen*mh));
+  lh = clamp(lh, 0.15, 4); la = clamp(la, 0.15, 4);
+  const m = matrix(lh, la);
+  const pois1x2 = normalize({home: fromMatrix(m,(i,j)=>i>j), draw: fromMatrix(m,(i,j)=>i===j), away: fromMatrix(m,(i,j)=>i<j)});
+
+  // 상대전적 (최근 6경기, 현재 홈팀 기준)
+  let h2h = null;
+  const hs = (pr.h2h || []).filter(g => g.gh != null).slice(0, 6);
+  if(hs.length >= 2){
+    const r = {home:0, draw:0, away:0};
+    for(const g of hs){
+      const hIsHome = g.home === fx.home.name;
+      const d = hIsHome ? g.gh - g.ga : g.ga - g.gh;
+      r[d > 0 ? "home" : d < 0 ? "away" : "draw"]++;
+    }
+    h2h = normalize({home: r.home + 1, draw: r.draw + 1, away: r.away + 1}); // 표본이 작아 1씩 더해 완화
+    notes.push(`상대전적 최근 ${hs.length}경기: 홈팀 ${r.home}승 ${r.draw}무 ${r.away}패`);
+  }
+  const api = pr.percent && pr.percent.home != null ? normalize({home: pr.percent.home, draw: pr.percent.draw, away: pr.percent.away}) : null;
+
+  const parts = [[pois1x2, 0.5]]; if(api) parts.push([api, 0.35]); if(h2h) parts.push([h2h, 0.15]);
+  const wsum = parts.reduce((s,p)=>s+p[1],0);
+  const p1x2 = {home:0, draw:0, away:0};
+  for(const [p,w] of parts) for(const k in p1x2) p1x2[k] += p[k]*w/wsum;
+
+  if(h.form || a.form) notes.unshift(`리그 폼: 홈 ${h.form.slice(-5) || "-"} / 원정 ${a.form.slice(-5) || "-"}`);
+  if(mh || ma) notes.push(`결장(확정): 홈 ${mh}명 / 원정 ${ma}명`);
+  if(pr.advice) notes.push(`API 의견: ${pr.advice}`);
+  return {lh, la, m, p1x2, pois1x2, api, h2h, notes, mh, ma};
+}
+
+function implied(odds){ const o = {}; for(const k in odds) if(odds[k]) o[k] = 1/odds[k]; return normalize(o); }
+function marketModel(mdl, market, line){
+  if(!mdl) return null;
+  if(market === "1x2") return mdl.p1x2;
+  if(market === "uo" && line != null){
+    const under = fromMatrix(mdl.m, (i,j) => i + j < line);
+    return {under, over: 1 - under};
+  }
+  if(market === "handicap" && line != null){
+    const r = {home: fromMatrix(mdl.m,(i,j)=>i+line>j), draw: fromMatrix(mdl.m,(i,j)=>i+line===j), away: fromMatrix(mdl.m,(i,j)=>i+line<j)};
+    return Number.isInteger(line) ? normalize(r) : normalize({home:r.home, away:r.away});
+  }
+  return null;
+}
+function blend(market, modelP){
+  if(!market && !modelP) return null;
+  if(!market) return modelP; if(!modelP) return market;
+  const w = S.marketWeight, r = {};
+  for(const k in market) r[k] = w*market[k] + (1-w)*(modelP[k] ?? market[k]);
+  return normalize(r);
+}
+
+// ---------- 데이터 가공 ----------
+let MATCHES = [];   // [{key, home, away, kickoff, league, fx, mdl, markets:[{market,line,odds,no,final,...}], toto}]
+function buildMatches(){
+  MATCHES = [];
+  if(!DATA) return;
+  const fxs = DATA.fixtures || {};
+  const map = new Map();
+  const keyOf = g => g.fixture_id ? "f" + g.fixture_id : `${g.home}|${g.away}|${g.kickoff}`;
+  const get = g => {
+    const k = keyOf(g);
+    if(!map.has(k)){
+      const fx = g.fixture_id ? fxs[String(g.fixture_id)] : null;
+      map.set(k, {key:k, home:g.home, away:g.away, kickoff:g.kickoff, league:g.league, fx, mdl: model(fx), markets:[], toto:null, how:g.match_how});
+    }
+    return map.get(k);
+  };
+  for(const g of DATA.proto || []){
+    const M = get(g);
+    const mk = implied(g.odds);
+    const mp = marketModel(M.mdl, g.market, g.line);
+    const final = blend(mk, mp);
+    const outs = Object.keys(g.odds).map(o => ({o, odds:g.odds[o], market:mk[o], model: mp ? mp[o] : null, p: final[o], ev: final[o]*g.odds[o] - 1}));
+    M.markets.push({no:g.no, market:g.market, line:g.line, odds:g.odds, outs, margin: Object.values(g.odds).reduce((s,x)=>s+1/x,0) - 1});
+  }
+  for(const g of DATA.toto || []){
+    const M = get(g);
+    const one = M.markets.find(x => x.market === "1x2");
+    let p = null, src = "";
+    if(one){ p = {}; one.outs.forEach(x => p[x.o] = x.p); src = "프로토 배당+모델"; }
+    else if(M.mdl){ p = M.mdl.p1x2; src = "통계 모델"; }
+    else if(g.votes){ p = normalize({home:g.votes.home, draw:g.votes.draw, away:g.votes.away}); src = "투표율(참고)"; }
+    else { p = {home:0.45, draw:0.27, away:0.28}; src = "기본값(데이터 없음)"; }
+    M.toto = {no:g.no, p, src, votes:g.votes};
+  }
+  MATCHES = [...map.values()].sort((a,b) => (a.kickoff||"").localeCompare(b.kickoff||""));
+}
+
+// ---------- 화면: 경기 분석 ----------
+function probBar(p){
+  if(!p || p.home == null) return "";
+  return `<div class="prob"><i class="ph" style="width:${p.home*100}%"></i><i class="pd" style="width:${(p.draw||0)*100}%"></i><i class="pa" style="width:${p.away*100}%"></i></div>`;
+}
+function renderMatches(){
+  const f = $("#matchFilter").value;
+  const list = MATCHES.filter(M => f === "all" || (f === "toto" && M.toto) || (f === "value" && M.markets.some(mk => mk.outs.some(o => o.ev > 0))));
+  $("#matchCount").textContent = `${list.length}경기`;
+  if(!list.length){ $("#matchList").innerHTML = `<div class="card muted">표시할 경기가 없습니다. 데이터 탭에서 불러오세요.</div>`; return; }
+  $("#matchList").innerHTML = list.map(M => {
+    const one = M.markets.find(x => x.market === "1x2");
+    const main = one ? Object.fromEntries(one.outs.map(o => [o.o, o.p])) : (M.toto ? M.toto.p : M.mdl && M.mdl.p1x2);
+    const best = M.markets.flatMap(mk => mk.outs.map(o => ({...o, mk}))).sort((a,b) => b.ev - a.ev)[0];
+    const chips = [
+      M.league ? `<span class="chip">${esc(M.league)}</span>` : "",
+      M.toto ? `<span class="chip warn">승무패 ${M.toto.no}</span>` : "",
+      M.fx ? (M.mdl ? `<span class="chip good">분석 데이터</span>` : `<span class="chip">통계 부족</span>`) : `<span class="chip bad">분석 데이터 없음</span>`,
+      M.fx && M.fx.lineups && M.fx.lineups.length ? `<span class="chip good">라인업 발표</span>` : "",
+      best && best.ev > 0 ? `<span class="chip good">EV+ ${MARKET_LABEL[best.mk.market]} ${OUT_LABEL[best.o]} ${(best.ev*100).toFixed(0)}%</span>` : "",
+    ].join("");
+    return `<div class="card match" data-key="${esc(M.key)}">
+      <div class="row"><span class="teams grow">${esc(M.home)} <span class="muted">vs</span> ${esc(M.away)}</span><span class="muted">${esc((M.kickoff||"").replace("T"," ").slice(5))}</span></div>
+      <div>${chips}</div>
+      ${probBar(main)}
+      <div class="muted">${main ? `승 ${pct(main.home)} · 무 ${pct(main.draw)} · 패 ${pct(main.away)}` : ""}</div>
+      <div class="detail">${detailHtml(M)}</div>
+    </div>`;
+  }).join("");
+}
+function detailHtml(M){
+  let h = "";
+  if(M.markets.length){
+    h += `<div class="scroll"><table><tr><th>번호·유형</th><th>선택</th><th>배당</th><th>배당확률</th><th>모델</th><th>최종</th><th>EV</th></tr>`;
+    for(const mk of M.markets){
+      mk.outs.forEach((o,i) => {
+        h += `<tr><td>${i===0 ? `${mk.no ?? ""} ${MARKET_LABEL[mk.market]}${mk.line != null ? " " + mk.line : ""}` : ""}</td><td>${OUT_LABEL[o.o]}</td><td>${o.odds.toFixed(2)}</td><td>${pct(o.market)}</td><td>${pct(o.model)}</td><td>${pct(o.p)}</td><td class="${o.ev>0?"ev-pos":"ev-neg"}">${(o.ev*100).toFixed(1)}%</td></tr>`;
+      });
+    }
+    h += `</table></div><p class="muted">배당 마진(수수료) 약 ${(M.markets[0].margin*100).toFixed(0)}%. EV는 1,000원 걸었을 때 기대 손익 비율입니다.</p>`;
+  }
+  if(M.toto) h += `<p class="muted">승무패 확률 근거: ${esc(M.toto.src)}${M.toto.votes ? ` · 투표율 승 ${M.toto.votes.home}% 무 ${M.toto.votes.draw}% 패 ${M.toto.votes.away}%` : ""}</p>`;
+  if(M.how) h += `<p class="muted">경기 연결: ${esc(M.how)}${M.fx ? ` (${esc(M.fx.home.name)} vs ${esc(M.fx.away.name)}, ${esc(M.fx.league)})` : ""}</p>`;
+  const mdl = M.mdl, fx = M.fx;
+  if(mdl){
+    h += `<h3>분석 근거</h3><ul>${mdl.notes.map(n => `<li>${esc(n)}</li>`).join("")}
+      <li>예상 득점: 홈 ${mdl.lh.toFixed(2)} · 원정 ${mdl.la.toFixed(2)} (푸아송 승 ${pct(mdl.pois1x2.home)} 무 ${pct(mdl.pois1x2.draw)} 패 ${pct(mdl.pois1x2.away)})</li>
+      ${mdl.api ? `<li>API-Football 예측: 승 ${pct(mdl.api.home)} 무 ${pct(mdl.api.draw)} 패 ${pct(mdl.api.away)}</li>` : ""}</ul>`;
+  }
+  if(fx){
+    const pr = fx.prediction;
+    if(pr && pr.h2h && pr.h2h.length){
+      h += `<h3>상대전적</h3><div class="scroll"><table><tr><th>날짜</th><th>홈</th><th>스코어</th><th>원정</th></tr>${pr.h2h.map(g => `<tr><td>${esc(g.date)}</td><td>${esc(g.home)}</td><td>${g.gh ?? "-"} : ${g.ga ?? "-"}</td><td>${esc(g.away)}</td></tr>`).join("")}</table></div>`;
+    }
+    h += `<div class="grid2">`;
+    for(const side of ["home","away"]){
+      const t = fx[side];
+      const inj = (fx.injuries || []).filter(i => i.team_id === t.id);
+      const lu = (fx.lineups || []).find(l => l.team_id === t.id);
+      h += `<div><h3>${esc(t.name)}</h3>`;
+      if(pr){ const s = pr[side]; h += `<div class="muted">최근5 폼 ${s.last5.form ?? "-"}% · 공격 ${s.last5.att ?? "-"}% · 수비 ${s.last5.def ?? "-"}%<br>경기당 득점 ${s.gf.total ?? "-"} / 실점 ${s.ga.total ?? "-"}</div>`; }
+      h += inj.length ? `<div>결장·부상: ${inj.map(i => `<span class="chip ${/missing/i.test(i.type||"") ? "bad" : "warn"}">${esc(i.player)} (${esc(i.reason || i.type)})</span>`).join("")}</div>` : `<div class="muted">부상·결장 정보 없음</div>`;
+      h += lu ? `<div class="muted">라인업 ${esc(lu.formation || "")}: ${lu.xi.map(x => esc(x.name)).join(", ")}</div>` : `<div class="muted">라인업 미발표 (보통 킥오프 20~40분 전)</div>`;
+      h += `</div>`;
+    }
+    h += `</div>`;
+  }
+  return h || `<p class="muted">배당 외 분석 데이터가 없습니다.</p>`;
+}
+
+// ---------- 프로토 조합 ----------
+function spentOn(date){ return ledger.filter(e => e.date === date).reduce((s,e) => s + e.stake, 0); }
+function remainingToday(){ return Math.max(0, S.dailyBudget - spentOn(todayStr())); }
+
+function combos(pool, minK, maxK){
+  const res = [];
+  const rec = (start, cur) => {
+    if(cur.length >= minK) res.push(cur.slice());
+    if(cur.length === maxK || res.length > 20000) return;
+    for(let i=start;i<pool.length;i++){
+      if(cur.some(c => c.key === pool[i].key)) continue; // 같은 경기 다른 유형은 함께 못 산다
+      cur.push(pool[i]); rec(i+1, cur); cur.pop();
+    }
+  };
+  rec(0, []);
+  return res;
+}
+function buildProto(){
+  const strat = $("#strategy").value;
+  S.strategy = strat; store.set("toto.settings", S);
+  const budget = Math.min(S.protoBudget, remainingToday());
+  // 경기·유형별로 가장 좋은 선택 하나씩
+  let pool = [];
+  for(const M of MATCHES) for(const mk of M.markets){
+    const o = [...mk.outs].sort((a,b) => strat === "ev" ? b.ev - a.ev : b.p - a.p)[0];
+    if(!o) continue;
+    pool.push({key:M.key, M, mk, ...o});
+  }
+  const allPool = pool.slice();
+  if(strat === "ev") pool = pool.filter(x => x.ev >= S.minEV && x.p >= S.minProb);
+  else pool = pool.filter(x => x.p >= Math.max(S.minProb, 0.5) && x.odds >= 1.25);
+  pool.sort((a,b) => strat === "ev" ? b.ev - a.ev : b.p - a.p);
+  pool = pool.slice(0, 14);
+
+  const minK = Math.max(1, S.minFold), maxK = Math.max(minK, S.maxFold);
+  let cs = combos(pool, minK, maxK).map(picks => {
+    const odds = picks.reduce((s,x) => s*x.odds, 1), p = picks.reduce((s,x) => s*x.p, 1);
+    return {picks, odds, p, ev: p*odds - 1};
+  });
+  if(strat === "prob") cs = cs.filter(c => c.odds >= 2.0).sort((a,b) => b.p - a.p);
+  else cs = cs.filter(c => c.ev > 0).sort((a,b) => b.ev*Math.sqrt(b.p) - a.ev*Math.sqrt(a.p));
+
+  // 같은 선택지가 너무 몰리지 않게 골라 담기
+  const chosen = [], used = new Map();
+  for(const c of cs){
+    if(chosen.length >= S.nTickets) break;
+    const ids = c.picks.map(x => x.key + x.mk.market + x.o);
+    if(ids.some(id => (used.get(id) || 0) >= 2)) continue;
+    if(chosen.some(t => t.picks.length === c.picks.length && t.picks.every(x => c.picks.includes(x)))) continue;
+    chosen.push(c); ids.forEach(id => used.set(id, (used.get(id) || 0) + 1));
+  }
+  // 금액 배분: EV 모드는 켈리 비율, 적중률 모드는 균등. 1,000원 단위.
+  const w = chosen.map(c => strat === "ev" ? Math.max(0.01, (c.p*c.odds - 1)/(c.odds - 1)) : 1);
+  const ws = w.reduce((a,b)=>a+b,0);
+  let left = Math.floor(budget/1000)*1000;
+  chosen.forEach((c,i) => { c.stake = Math.max(1000, Math.floor(budget*w[i]/ws/1000)*1000); });
+  let total = chosen.reduce((s,c)=>s+c.stake,0);
+  while(total > left && chosen.length){ const big = chosen.reduce((a,b) => a.stake >= b.stake ? a : b); if(big.stake <= 1000){ chosen.pop(); } else big.stake -= 1000; total = chosen.reduce((s,c)=>s+c.stake,0); }
+  if(chosen.length && total < left) chosen[0].stake += left - total;
+
+  $("#protoInfo").innerHTML = `오늘 남은 한도 ${won(remainingToday())}원 · 프로토 배정 ${won(S.protoBudget)}원 → 이번 추천 ${won(chosen.reduce((s,c)=>s+c.stake,0))}원`;
+  if(!MATCHES.some(M => M.markets.length)) $("#protoTickets").innerHTML = `<div class="card muted">프로토 경기 데이터가 없습니다.</div>`;
+  else if(budget < 1000) $("#protoTickets").innerHTML = `<div class="card notice">오늘 한도를 모두 사용했습니다.</div>`;
+  else if(!chosen.length) $("#protoTickets").innerHTML = `<div class="card"><b>오늘은 조건에 맞는 조합이 없습니다.</b><p class="muted">${strat === "ev" ? "배당 대비 가치가 있는(EV+) 선택이 부족합니다. 억지로 사지 않는 것도 전략입니다. 설정에서 최소 EV를 낮추거나 '적중률 우선'으로 바꿔볼 수 있습니다." : "확률 50% 이상 선택지가 부족합니다."}</p></div>`;
+  else $("#protoTickets").innerHTML = chosen.map((c,i) => `<div class="card ticket">
+      <div class="head"><span>${i+1}번 조합 · ${c.picks.length}폴더</span><span>${won(c.stake)}원</span></div>
+      <table>${c.picks.map(x => `<tr><td>${x.mk.no ?? ""} ${esc(x.M.home)} vs ${esc(x.M.away)}<br><span class="muted">${MARKET_LABEL[x.mk.market]}${x.mk.line != null ? " " + x.mk.line : ""} · <b>${OUT_LABEL[x.o]}</b></span></td><td>${x.odds.toFixed(2)}</td><td>${pct(x.p)}</td></tr>`).join("")}</table>
+      <div class="row" style="margin-top:6px"><span class="muted grow">합산 배당 ${c.odds.toFixed(2)} · 적중확률 ${pct(c.p)} · EV <span class="${c.ev>0?"ev-pos":"ev-neg"}">${(c.ev*100).toFixed(1)}%</span> · 적중 시 ${won(c.stake*c.odds)}원</span>
+      <button class="btn small" data-buy="${i}">구매 기록</button></div></div>`).join("");
+  buildProto.last = chosen;
+
+  $("#protoPool").innerHTML = allPool.length ? `<table><tr><th>경기</th><th>선택</th><th>배당</th><th>확률</th><th>EV</th></tr>${allPool.sort((a,b)=>b.ev-a.ev).map(x => `<tr><td>${x.mk.no ?? ""} ${esc(x.M.home)} vs ${esc(x.M.away)}</td><td>${MARKET_LABEL[x.mk.market]} ${OUT_LABEL[x.o]}</td><td>${x.odds.toFixed(2)}</td><td>${pct(x.p)}</td><td class="${x.ev>0?"ev-pos":"ev-neg"}">${(x.ev*100).toFixed(1)}%</td></tr>`).join("")}</table>` : `<p class="muted">없음</p>`;
+}
+
+// ---------- 축구승무패 ----------
+function buildToto(){
+  const games = MATCHES.filter(M => M.toto).sort((a,b) => a.toto.no - b.toto.no);
+  const budget = Math.min(Math.max(0, S.dailyBudget - S.protoBudget), remainingToday());
+  const unit = Math.max(100, S.totoUnit);
+  const maxC = Math.floor(budget/unit);
+  $("#totoInfo").textContent = `승무패 배정 ${won(budget)}원 · 1조합 ${won(unit)}원 → 최대 ${maxC}조합`;
+  if(!games.length){ $("#totoSummary").innerHTML = ""; $("#totoTable").innerHTML = `<p class="muted">승무패 경기 데이터가 없습니다.</p>`; return; }
+  if(maxC < 1){ $("#totoSummary").innerHTML = `<div class="notice">승무패에 쓸 금액이 없습니다.</div>`; $("#totoTable").innerHTML = ""; return; }
+
+  // 각 경기 최고 확률 하나로 시작해서, 확률 상승 대비 조합 증가가 가장 효율적인 표시를 하나씩 추가
+  const sel = games.map(M => { const p = M.toto.p; const best = Object.keys(p).sort((a,b)=>p[b]-p[a])[0]; return new Set([best]); });
+  let combosN = 1;
+  for(;;){
+    let bestGain = 0, bi = -1, bo = null;
+    games.forEach((M,i) => {
+      const k = sel[i].size; if(k >= 3) return;
+      if(combosN/k*(k+1) > maxC) return;
+      const S0 = [...sel[i]].reduce((s,o)=>s+M.toto.p[o],0);
+      for(const o of ["home","draw","away"]){
+        if(sel[i].has(o)) continue;
+        const gain = Math.log((S0 + M.toto.p[o])/S0)/Math.log((k+1)/k);
+        if(gain > bestGain){ bestGain = gain; bi = i; bo = o; }
+      }
+    });
+    if(bi < 0) break;
+    combosN = combosN/sel[bi].size*(sel[bi].size+1);
+    sel[bi].add(bo);
+  }
+  const hit = games.map((M,i) => [...sel[i]].reduce((s,o)=>s+M.toto.p[o],0));
+  // 적중 개수 분포
+  let dist = [1];
+  for(const h of hit){ const nd = new Array(dist.length+1).fill(0); dist.forEach((p,k) => { nd[k] += p*(1-h); nd[k+1] += p*h; }); dist = nd; }
+  const n = games.length;
+  const cost = combosN*unit;
+  $("#totoSummary").innerHTML = `<div class="row" style="margin:6px 0"><span class="stat"><span class="muted">조합 수</span><b>${combosN}</b></span><span class="stat"><span class="muted">구매 금액</span><b>${won(cost)}원</b></span>
+    <span class="stat"><span class="muted">${n}경기 전부 적중</span><b>${pct(dist[n])}</b></span><span class="stat"><span class="muted">${n-1}경기 이상</span><b>${pct((dist[n]||0)+(dist[n-1]||0))}</b></span></div>
+    ${n !== 14 ? `<p class="notice">인식된 경기가 ${n}경기입니다. 14경기가 모두 들어왔는지 확인하세요.</p>` : ""}
+    <p class="muted">승무패는 배당이 아니라 적중자끼리 나눠 갖는 방식이라, 많이 몰린 쪽과 반대인 선택이 맞으면 당첨금이 커집니다. 투표율이 있으면 모델 확률이 투표율보다 높은 선택(★)을 참고하세요.</p>
+    <button class="btn" id="totoBuy">이 마킹으로 구매 기록</button>`;
+  $("#totoTable").innerHTML = `<table><tr><th>번호·경기</th><th>마킹</th><th>승</th><th>무</th><th>패</th><th>근거</th></tr>${games.map((M,i) => {
+    const p = M.toto.p, v = M.toto.votes;
+    const cell = o => { const star = v && v[o] > 0 && p[o]/(v[o]/100) > 1.3 && p[o] > 0.2 ? " ★" : ""; return `<td>${pct(p[o])}${star}${v ? `<br><span class="muted">투표 ${v[o]}%</span>` : ""}</td>`; };
+    return `<tr><td>${M.toto.no}. ${esc(M.home)} vs ${esc(M.away)}</td><td><div class="marks">${["home","draw","away"].map(o => `<span class="${sel[i].has(o)?"on":""}">${OUT_LABEL[o]}</span>`).join("")}</div></td>${cell("home")}${cell("draw")}${cell("away")}<td class="muted">${esc(M.toto.src)}</td></tr>`;
+  }).join("")}</table>`;
+  buildToto.last = {games, sel, cost, p: dist[n]};
+}
+
+// ---------- 기록 ----------
+function saveLedger(){ store.set("toto.ledger", ledger); renderLedger(); updateBudget(); }
+function addLedger(e){
+  const left = remainingToday();
+  if(e.stake > left){ alert(`오늘 남은 한도는 ${won(left)}원입니다. 하루 한도를 넘겨서 기록할 수 없습니다.`); return false; }
+  ledger.unshift(Object.assign({id: Date.now() + Math.random(), date: todayStr(), status: "pending", payout: 0}, e));
+  saveLedger(); return true;
+}
+function renderLedger(){
+  const done = ledger.filter(e => e.status !== "pending");
+  const stake = done.reduce((s,e)=>s+e.stake,0), ret = done.reduce((s,e)=>s+(e.status==="win" ? e.payout : 0),0);
+  const wins = done.filter(e => e.status === "win").length;
+  const month = todayStr().slice(0,7);
+  const mDone = done.filter(e => e.date.startsWith(month));
+  const mProfit = mDone.reduce((s,e)=>s+(e.status==="win"?e.payout:0)-e.stake,0);
+  $("#ledgerStats").innerHTML = `<span class="stat"><span class="muted">총 구매</span><b>${won(stake)}원</b></span><span class="stat"><span class="muted">총 적중금</span><b>${won(ret)}원</b></span>
+    <span class="stat"><span class="muted">누적 손익</span><b class="${ret-stake>=0?"ev-pos":"ev-neg"}">${ret-stake>=0?"+":""}${won(ret-stake)}원</b></span>
+    <span class="stat"><span class="muted">이번 달 손익</span><b class="${mProfit>=0?"ev-pos":"ev-neg"}">${mProfit>=0?"+":""}${won(mProfit)}원</b></span>
+    <span class="stat"><span class="muted">적중률</span><b>${done.length ? (wins/done.length*100).toFixed(0) : 0}%</b></span>
+    <span class="stat"><span class="muted">회수율</span><b>${stake ? (ret/stake*100).toFixed(0) : 0}%</b></span>`;
+  $("#ledgerTable").innerHTML = ledger.length ? `<table><tr><th>날짜·내용</th><th>금액</th><th>배당</th><th>결과</th><th></th></tr>${ledger.map(e => `<tr>
+    <td>${esc(e.date)} <span class="chip">${e.type === "toto" ? "승무패" : "프로토"}</span><br><span class="muted">${esc(e.desc)}</span></td>
+    <td>${won(e.stake)}</td><td>${e.odds ? (+e.odds).toFixed(2) : "-"}</td>
+    <td>${e.status === "win" ? `<span class="chip good">적중 ${won(e.payout)}</span>` : e.status === "lose" ? `<span class="chip bad">미적중</span>` : `<span class="chip">대기</span>`}</td>
+    <td><button class="btn small" data-win="${e.id}">적중</button> <button class="btn small" data-lose="${e.id}">미적중</button> <button class="btn small" data-del="${e.id}">삭제</button></td></tr>`).join("")}</table>` : `<p class="muted">아직 기록이 없습니다.</p>`;
+}
+function updateBudget(){
+  $("#spentToday").textContent = won(spentOn(todayStr()));
+  $("#dailyCap").textContent = won(S.dailyBudget);
+}
+
+// ---------- 불러오기 ----------
+function setData(d, msg){
+  DATA = d;
+  $("#dataStamp").textContent = d.generated_at ? `데이터 ${d.generated_at.replace("T"," ").slice(5,16)}` : "붙여넣기 데이터";
+  const nf = Object.keys(d.fixtures || {}).length;
+  $("#loadMsg").textContent = `${msg} · 프로토 ${(d.proto||[]).length}항목, 승무패 ${(d.toto||[]).length}경기, 분석 연결 ${nf}경기${d.api_remaining != null ? `, API 남은 호출 ${d.api_remaining}` : ""}`;
+  const um = d.unmatched || [];
+  $("#unmatchedCard").style.display = um.length ? "" : "none";
+  $("#unmatched").innerHTML = `<table><tr><th>베트맨 경기</th><th>시각</th><th>리그</th><th>사유</th></tr>${um.map(u => `<tr><td>${esc(u.home)} vs ${esc(u.away)}</td><td>${esc(u.kickoff)}</td><td>${esc(u.league)}</td><td>${esc(u.why)}</td></tr>`).join("")}</table>`;
+  refresh();
+}
+function refresh(){ buildMatches(); renderMatches(); buildProto(); buildToto(); renderLedger(); updateBudget(); }
+async function loadLatest(){
+  try{
+    const r = await fetch("data/latest.json?t=" + Date.now());
+    if(!r.ok) throw new Error(r.status);
+    setData(await r.json(), "최신 수집 데이터");
+  }catch(e){ $("#loadMsg").textContent = "자동으로 불러올 데이터가 없습니다. 파일을 선택하거나 붙여넣으세요."; refresh(); }
+}
+
+// ---------- 이벤트 ----------
+document.getElementById("tabs").addEventListener("click", e => {
+  const t = e.target.dataset.tab; if(!t) return;
+  document.querySelectorAll("nav button").forEach(b => b.classList.toggle("on", b.dataset.tab === t));
+  document.querySelectorAll("section").forEach(s => s.classList.toggle("on", s.id === t));
+  store.set("toto.tab", t);
+});
+$("#reloadBtn").onclick = loadLatest;
+$("#fileIn").onchange = e => { const f = e.target.files[0]; if(!f) return; f.text().then(t => { try{ setData(JSON.parse(t), f.name); }catch(err){ alert("JSON 파일이 아닙니다."); } }); };
+$("#pasteBtn").onclick = () => {
+  const y = new Date().getFullYear();
+  setData({generated_at: null, proto: parseProto($("#pasteProto").value, y), toto: parseToto($("#pasteToto").value, y), fixtures: {}, unmatched: []}, "붙여넣기");
+};
+$("#matchFilter").onchange = renderMatches;
+$("#matchList").addEventListener("click", e => { const c = e.target.closest(".match"); if(c && !e.target.closest("table")) c.classList.toggle("open"); });
+$("#strategy").onchange = buildProto;
+$("#rebuildProto").onclick = buildProto;
+$("#protoTickets").addEventListener("click", e => {
+  const i = e.target.dataset.buy; if(i == null) return;
+  const c = buildProto.last[+i];
+  const desc = c.picks.map(x => `${x.mk.no ?? ""} ${x.M.home}-${x.M.away} ${MARKET_LABEL[x.mk.market]} ${OUT_LABEL[x.o]}`).join(" / ");
+  if(addLedger({type:"proto", desc, stake:c.stake, odds:+c.odds.toFixed(2)})) e.target.textContent = "기록됨";
+});
+$("#totoSummary").addEventListener("click", e => {
+  if(e.target.id !== "totoBuy" || !buildToto.last) return;
+  const {games, sel, cost} = buildToto.last;
+  const desc = games.map((M,i) => `${M.toto.no}:${[...sel[i]].map(o => OUT_LABEL[o]).join("")}`).join(" ");
+  if(addLedger({type:"toto", desc, stake:cost, odds:null})) e.target.textContent = "기록됨";
+});
+$("#lgAdd").onclick = () => {
+  const stake = +$("#lgStake").value; if(!stake) return alert("금액을 입력하세요.");
+  if(addLedger({type:$("#lgType").value, desc:$("#lgDesc").value, stake, odds: +$("#lgOdds").value || null})){ $("#lgDesc").value = ""; $("#lgStake").value = ""; $("#lgOdds").value = ""; }
+};
+$("#ledgerTable").addEventListener("click", e => {
+  const d = e.target.dataset; const id = +(d.win || d.lose || d.del); if(!id) return;
+  const en = ledger.find(x => x.id === id); if(!en) return;
+  if(d.del){ if(confirm("이 기록을 삭제할까요?")) ledger = ledger.filter(x => x.id !== id); }
+  else if(d.win){
+    const guess = en.odds ? Math.floor(en.stake*en.odds) : "";
+    const v = prompt("받은 적중금(원)을 입력하세요.", guess); if(v === null) return;
+    en.status = "win"; en.payout = +v || 0;
+  } else { en.status = "lose"; en.payout = 0; }
+  saveLedger();
+});
+$("#exportBtn").onclick = () => {
+  const blob = new Blob([JSON.stringify(ledger, null, 1)], {type:"application/json"});
+  const a = document.createElement("a"); a.href = URL.createObjectURL(blob); a.download = `toto-ledger-${todayStr()}.json`; a.click();
+};
+$("#importIn").onchange = e => { const f = e.target.files[0]; if(!f) return; f.text().then(t => { try{ const arr = JSON.parse(t); if(!Array.isArray(arr)) throw 0; ledger = arr; saveLedger(); }catch(err){ alert("기록 파일이 아닙니다."); } }); };
+
+function applyTheme(){ if(S.theme === "auto") document.documentElement.removeAttribute("data-theme"); else document.documentElement.dataset.theme = S.theme; }
+document.querySelectorAll("[data-set]").forEach(el => {
+  el.value = S[el.dataset.set];
+  el.addEventListener("change", () => {
+    const k = el.dataset.set; S[k] = el.tagName === "SELECT" ? el.value : (el.value === "" ? DEFAULTS[k] : +el.value);
+    store.set("toto.settings", S); applyTheme(); refresh();
+  });
+});
+$("#strategy").value = S.strategy;
+applyTheme();
+const lastTab = store.get("toto.tab", null);
+if(lastTab){ const b = document.querySelector(`nav button[data-tab="${lastTab}"]`); if(b) b.click(); }
+loadLatest();
+</script>
+</body>
+</html>
