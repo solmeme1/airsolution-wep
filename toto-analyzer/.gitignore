@@ -1,0 +1,6 @@
+collector/.env
+collector/raw/
+collector/cache/
+collector/__pycache__/
+web/data/
+collector/team_alias_learned.json
