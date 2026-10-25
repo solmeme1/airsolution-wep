@@ -1,67 +1,880 @@
 {
-  "_설명": "베트맨 팀 표기 -> API-Football 영문 팀명(일부만 써도 됨). 매칭 안 된 팀은 data/latest.json의 unmatched에 나오니 여기에 추가하세요.",
-  "teams": {
-    "맨체스U": ["Manchester United"], "맨유": ["Manchester United"],
-    "맨체스C": ["Manchester City"], "맨시티": ["Manchester City"],
-    "리버풀": ["Liverpool"], "아스널": ["Arsenal"], "첼시": ["Chelsea"],
-    "토트넘": ["Tottenham"], "뉴캐슬": ["Newcastle"], "A빌라": ["Aston Villa"], "애스턴빌라": ["Aston Villa"],
-    "웨스트햄": ["West Ham"], "브라이턴": ["Brighton"], "본머스": ["Bournemouth"], "풀럼": ["Fulham"],
-    "C팰리스": ["Crystal Palace"], "크리스탈팰": ["Crystal Palace"], "브렌트퍼": ["Brentford"], "브렌트포드": ["Brentford"],
-    "노팅엄": ["Nottingham"], "에버턴": ["Everton"], "울버햄": ["Wolves", "Wolverhampton"], "울버햄튼": ["Wolves"],
-    "리즈": ["Leeds"], "번리": ["Burnley"], "선덜랜드": ["Sunderland"], "레스터C": ["Leicester"], "레스터": ["Leicester"],
-    "입스위치": ["Ipswich"], "사우샘프": ["Southampton"], "사우샘프턴": ["Southampton"],
-    "셰필드U": ["Sheffield Utd", "Sheffield United"], "셰필드W": ["Sheffield Wednesday"], "미들즈브": ["Middlesbrough"],
-    "웨스트브롬": ["West Brom"], "WBA": ["West Brom"], "노리치": ["Norwich"], "왓포드": ["Watford"], "코번트리": ["Coventry"],
-    "스토크": ["Stoke"], "브리스톨C": ["Bristol City"], "헐시티": ["Hull"], "QPR": ["QPR"], "밀월": ["Millwall"],
-    "스완지": ["Swansea"], "카디프": ["Cardiff"], "프레스턴": ["Preston"], "블랙번": ["Blackburn"], "더비": ["Derby"],
-    "포츠머스": ["Portsmouth"], "옥스퍼드": ["Oxford"], "플리머스": ["Plymouth"], "루턴": ["Luton"], "렉섬": ["Wrexham"],
-
-    "R마드리드": ["Real Madrid"], "레알마드리드": ["Real Madrid"], "바르셀로나": ["Barcelona"], "바르셀로": ["Barcelona"],
-    "AT마드리드": ["Atletico Madrid"], "아틀레티코": ["Atletico Madrid"], "세비야": ["Sevilla"], "비야레알": ["Villarreal"],
-    "R소시에다": ["Real Sociedad"], "레알소시에": ["Real Sociedad"], "베티스": ["Real Betis", "Betis"], "빌바오": ["Athletic Club", "Bilbao"],
-    "발렌시아": ["Valencia"], "지로나": ["Girona"], "셀타비고": ["Celta Vigo"], "오사수나": ["Osasuna"], "헤타페": ["Getafe"],
-    "마요르카": ["Mallorca"], "라요": ["Rayo Vallecano"], "알라베스": ["Alaves"], "라스팔마스": ["Las Palmas"],
-    "에스파뇰": ["Espanyol"], "레가네스": ["Leganes"], "바야돌리드": ["Valladolid"], "엘체": ["Elche"], "레반테": ["Levante"], "오비에도": ["Oviedo"],
-
-    "인터밀란": ["Inter"], "인테르": ["Inter"], "AC밀란": ["AC Milan"], "유벤투스": ["Juventus"], "나폴리": ["Napoli"],
-    "AS로마": ["AS Roma", "Roma"], "라치오": ["Lazio"], "아탈란타": ["Atalanta"], "피오렌티": ["Fiorentina"], "피오렌티나": ["Fiorentina"],
-    "볼로냐": ["Bologna"], "토리노": ["Torino"], "우디네세": ["Udinese"], "제노아": ["Genoa"], "칼리아리": ["Cagliari"],
-    "레체": ["Lecce"], "엠폴리": ["Empoli"], "베로나": ["Verona"], "파르마": ["Parma"], "코모": ["Como"], "몬차": ["Monza"],
-    "베네치아": ["Venezia"], "사수올로": ["Sassuolo"], "피사": ["Pisa"], "크레모네세": ["Cremonese"],
-
-    "B뮌헨": ["Bayern"], "바이에른": ["Bayern"], "도르트문": ["Dortmund"], "도르트문트": ["Dortmund"], "레버쿠젠": ["Leverkusen"],
-    "라이프치히": ["Leipzig"], "프랑크푸르": ["Eintracht Frankfurt"], "프랑크푸르트": ["Eintracht Frankfurt"], "슈투트가": ["Stuttgart"],
-    "볼프스부르": ["Wolfsburg"], "묀헨글라": ["Monchengladbach", "Gladbach"], "프라이부르": ["Freiburg"], "호펜하임": ["Hoffenheim"],
-    "마인츠": ["Mainz"], "브레멘": ["Werder Bremen"], "아우크스부": ["Augsburg"], "우니온베를": ["Union Berlin"], "보훔": ["Bochum"],
-    "하이덴하임": ["Heidenheim"], "장크트파울": ["St. Pauli"], "함부르크": ["Hamburger"], "쾰른": ["Koln", "Köln"], "홀슈타인": ["Holstein Kiel"],
-
-    "파리생제르": ["Paris Saint Germain"], "PSG": ["Paris Saint Germain"], "마르세유": ["Marseille"], "모나코": ["Monaco"], "리옹": ["Lyon"],
-    "릴": ["Lille"], "니스": ["Nice"], "랑스": ["Lens"], "렌": ["Rennes"], "스트라스부": ["Strasbourg"], "낭트": ["Nantes"],
-    "툴루즈": ["Toulouse"], "브레스트": ["Brest"], "랭스": ["Reims"], "몽펠리에": ["Montpellier"], "르아브르": ["Le Havre"],
-    "오세르": ["Auxerre"], "앙제": ["Angers"], "생테티엔": ["Saint Etienne"], "로리앙": ["Lorient"], "메스": ["Metz"], "파리FC": ["Paris FC"],
-
-    "아약스": ["Ajax"], "PSV": ["PSV"], "페예노르트": ["Feyenoord"], "AZ알크마": ["AZ Alkmaar"], "트벤테": ["Twente"],
-    "벤피카": ["Benfica"], "포르투": ["FC Porto"], "스포르팅": ["Sporting CP"], "브라가": ["Braga"],
-    "셀틱": ["Celtic"], "레인저스": ["Rangers"], "갈라타사": ["Galatasaray"], "페네르바": ["Fenerbahce"],
-
-    "울산": ["Ulsan"], "울산HD": ["Ulsan"], "전북": ["Jeonbuk"], "포항": ["Pohang"], "FC서울": ["FC Seoul"], "서울": ["FC Seoul"],
-    "수원FC": ["Suwon City", "Suwon FC"], "수원삼성": ["Suwon Bluewings"], "강원": ["Gangwon"], "광주": ["Gwangju"],
-    "대전": ["Daejeon"], "제주": ["Jeju"], "대구": ["Daegu"], "김천": ["Gimcheon"], "인천": ["Incheon"], "안양": ["Anyang"],
-    "부산": ["Busan"], "전남": ["Jeonnam"], "부천": ["Bucheon"], "성남": ["Seongnam"], "경남": ["Gyeongnam"], "충남아산": ["Asan"],
-    "김포": ["Gimpo"], "천안": ["Cheonan"], "충북청주": ["Cheongju"], "안산": ["Ansan"], "화성": ["Hwaseong"],
-
-    "가시마": ["Kashima"], "우라와": ["Urawa"], "가와사키": ["Kawasaki"], "요코하마M": ["Yokohama F. Marinos"], "비셀고베": ["Vissel Kobe"],
-    "고베": ["Vissel Kobe"], "감바오사카": ["Gamba Osaka"], "G오사카": ["Gamba Osaka"], "C오사카": ["Cerezo Osaka"], "나고야": ["Nagoya"],
-    "산프레체": ["Sanfrecce"], "히로시마": ["Sanfrecce"], "FC도쿄": ["FC Tokyo"], "도쿄V": ["Tokyo Verdy"], "가시와": ["Kashiwa"],
-    "마치다": ["Machida"], "세레소": ["Cerezo Osaka"], "후쿠오카": ["Avispa Fukuoka"], "교토": ["Kyoto"], "쇼난": ["Shonan"],
-    "니가타": ["Albirex Niigata"], "삿포로": ["Sapporo"], "도스": ["Sagan Tosu"], "시미즈": ["Shimizu"], "요코하마FC": ["Yokohama FC"]
-  },
-  "leagues": {
-    "EPL": [39], "프리미어": [39], "챔피언십": [40], "EFL": [40], "잉글랜드": [39, 40], "FA컵": [45],
-    "라리가": [140], "스페인": [140], "세리에": [135], "이탈리아": [135], "분데스": [78], "독일": [78],
-    "리그앙": [61], "리그1": [61], "프랑스": [61], "에레디비": [88], "네덜란드": [88], "포르투갈": [94], "스코틀": [179],
-    "UCL": [2], "챔스": [2], "UEL": [3], "유로파": [3], "UECL": [848], "컨퍼런스": [848],
-    "K리그1": [292], "K리그2": [293], "K리그": [292, 293], "J1": [98], "J리그": [98, 99], "J2": [99],
-    "MLS": [253], "A리그": [188], "호주": [188]
-  }
+ "_설명": "베트맨 팀 표기(정식명의 일부여도 됨) -> 영문 팀명 후보(API-Football·football-data 표기). 매칭 안 된 팀은 웹 데이터 탭에 나오니 여기에 추가하세요. 자동 학습분은 team_alias_learned.json에 쌓입니다.",
+ "teams": {
+  "맨체스U": [
+   "Manchester United",
+   "Man United"
+  ],
+  "맨유": [
+   "Manchester United",
+   "Man United"
+  ],
+  "맨체스C": [
+   "Manchester City",
+   "Man City"
+  ],
+  "맨시티": [
+   "Manchester City",
+   "Man City"
+  ],
+  "리버풀": [
+   "Liverpool"
+  ],
+  "아스널": [
+   "Arsenal"
+  ],
+  "첼시": [
+   "Chelsea"
+  ],
+  "토트넘": [
+   "Tottenham"
+  ],
+  "뉴캐슬": [
+   "Newcastle"
+  ],
+  "A빌라": [
+   "Aston Villa"
+  ],
+  "애스턴빌라": [
+   "Aston Villa"
+  ],
+  "웨스트햄": [
+   "West Ham"
+  ],
+  "브라이턴": [
+   "Brighton"
+  ],
+  "본머스": [
+   "Bournemouth"
+  ],
+  "풀럼": [
+   "Fulham"
+  ],
+  "C팰리스": [
+   "Crystal Palace"
+  ],
+  "크리스탈팰": [
+   "Crystal Palace"
+  ],
+  "브렌트퍼": [
+   "Brentford"
+  ],
+  "브렌트포드": [
+   "Brentford"
+  ],
+  "노팅엄": [
+   "Nottingham",
+   "Nott'm Forest"
+  ],
+  "에버턴": [
+   "Everton"
+  ],
+  "울버햄": [
+   "Wolves",
+   "Wolverhampton"
+  ],
+  "울버햄튼": [
+   "Wolves"
+  ],
+  "리즈": [
+   "Leeds"
+  ],
+  "번리": [
+   "Burnley"
+  ],
+  "선덜랜드": [
+   "Sunderland"
+  ],
+  "레스터C": [
+   "Leicester"
+  ],
+  "레스터": [
+   "Leicester"
+  ],
+  "입스위치": [
+   "Ipswich"
+  ],
+  "사우샘프": [
+   "Southampton"
+  ],
+  "사우샘프턴": [
+   "Southampton"
+  ],
+  "셰필드U": [
+   "Sheffield Utd",
+   "Sheffield United"
+  ],
+  "셰필드W": [
+   "Sheffield Wednesday",
+   "Sheffield Weds"
+  ],
+  "미들즈브": [
+   "Middlesbrough"
+  ],
+  "웨스트브롬": [
+   "West Brom"
+  ],
+  "WBA": [
+   "West Brom"
+  ],
+  "노리치": [
+   "Norwich"
+  ],
+  "왓포드": [
+   "Watford"
+  ],
+  "코번트리": [
+   "Coventry"
+  ],
+  "스토크": [
+   "Stoke"
+  ],
+  "브리스톨C": [
+   "Bristol City"
+  ],
+  "헐시티": [
+   "Hull"
+  ],
+  "QPR": [
+   "QPR"
+  ],
+  "밀월": [
+   "Millwall"
+  ],
+  "스완지": [
+   "Swansea"
+  ],
+  "카디프": [
+   "Cardiff"
+  ],
+  "프레스턴": [
+   "Preston"
+  ],
+  "블랙번": [
+   "Blackburn"
+  ],
+  "더비": [
+   "Derby"
+  ],
+  "포츠머스": [
+   "Portsmouth"
+  ],
+  "옥스퍼드": [
+   "Oxford"
+  ],
+  "플리머스": [
+   "Plymouth"
+  ],
+  "루턴": [
+   "Luton"
+  ],
+  "렉섬": [
+   "Wrexham"
+  ],
+  "R마드리드": [
+   "Real Madrid"
+  ],
+  "레알마드리드": [
+   "Real Madrid"
+  ],
+  "바르셀로나": [
+   "Barcelona"
+  ],
+  "바르셀로": [
+   "Barcelona"
+  ],
+  "AT마드리드": [
+   "Atletico Madrid",
+   "Ath Madrid"
+  ],
+  "아틀레티코": [
+   "Atletico Madrid",
+   "Ath Madrid"
+  ],
+  "세비야": [
+   "Sevilla"
+  ],
+  "비야레알": [
+   "Villarreal"
+  ],
+  "R소시에다": [
+   "Real Sociedad"
+  ],
+  "레알소시에": [
+   "Real Sociedad"
+  ],
+  "베티스": [
+   "Real Betis",
+   "Betis"
+  ],
+  "빌바오": [
+   "Athletic Club",
+   "Bilbao",
+   "Ath Bilbao"
+  ],
+  "발렌시아": [
+   "Valencia"
+  ],
+  "지로나": [
+   "Girona"
+  ],
+  "셀타비고": [
+   "Celta Vigo"
+  ],
+  "오사수나": [
+   "Osasuna"
+  ],
+  "헤타페": [
+   "Getafe"
+  ],
+  "마요르카": [
+   "Mallorca"
+  ],
+  "라요": [
+   "Rayo Vallecano"
+  ],
+  "알라베스": [
+   "Alaves"
+  ],
+  "라스팔마스": [
+   "Las Palmas"
+  ],
+  "에스파뇰": [
+   "Espanyol",
+   "Espanol"
+  ],
+  "레가네스": [
+   "Leganes"
+  ],
+  "바야돌리드": [
+   "Valladolid"
+  ],
+  "엘체": [
+   "Elche"
+  ],
+  "레반테": [
+   "Levante"
+  ],
+  "오비에도": [
+   "Oviedo"
+  ],
+  "인터밀란": [
+   "Inter"
+  ],
+  "인테르": [
+   "Inter"
+  ],
+  "AC밀란": [
+   "AC Milan"
+  ],
+  "유벤투스": [
+   "Juventus"
+  ],
+  "나폴리": [
+   "Napoli"
+  ],
+  "AS로마": [
+   "AS Roma",
+   "Roma"
+  ],
+  "라치오": [
+   "Lazio"
+  ],
+  "아탈란타": [
+   "Atalanta"
+  ],
+  "피오렌티": [
+   "Fiorentina"
+  ],
+  "피오렌티나": [
+   "Fiorentina"
+  ],
+  "볼로냐": [
+   "Bologna"
+  ],
+  "토리노": [
+   "Torino"
+  ],
+  "우디네세": [
+   "Udinese"
+  ],
+  "제노아": [
+   "Genoa"
+  ],
+  "칼리아리": [
+   "Cagliari"
+  ],
+  "레체": [
+   "Lecce"
+  ],
+  "엠폴리": [
+   "Empoli"
+  ],
+  "베로나": [
+   "Verona"
+  ],
+  "파르마": [
+   "Parma"
+  ],
+  "코모": [
+   "Como"
+  ],
+  "몬차": [
+   "Monza"
+  ],
+  "베네치아": [
+   "Venezia"
+  ],
+  "사수올로": [
+   "Sassuolo"
+  ],
+  "피사": [
+   "Pisa"
+  ],
+  "크레모네세": [
+   "Cremonese"
+  ],
+  "B뮌헨": [
+   "Bayern",
+   "Bayern Munich"
+  ],
+  "바이에른": [
+   "Bayern"
+  ],
+  "도르트문": [
+   "Dortmund"
+  ],
+  "도르트문트": [
+   "Dortmund"
+  ],
+  "레버쿠젠": [
+   "Leverkusen"
+  ],
+  "라이프치히": [
+   "Leipzig",
+   "RB Leipzig"
+  ],
+  "프랑크푸르": [
+   "Eintracht Frankfurt",
+   "Ein Frankfurt"
+  ],
+  "프랑크푸르트": [
+   "Eintracht Frankfurt",
+   "Ein Frankfurt"
+  ],
+  "슈투트가": [
+   "Stuttgart"
+  ],
+  "볼프스부르": [
+   "Wolfsburg"
+  ],
+  "묀헨글라": [
+   "Monchengladbach",
+   "Gladbach"
+  ],
+  "프라이부르": [
+   "Freiburg"
+  ],
+  "호펜하임": [
+   "Hoffenheim"
+  ],
+  "마인츠": [
+   "Mainz"
+  ],
+  "브레멘": [
+   "Werder Bremen"
+  ],
+  "아우크스부": [
+   "Augsburg"
+  ],
+  "우니온베를": [
+   "Union Berlin"
+  ],
+  "보훔": [
+   "Bochum"
+  ],
+  "하이덴하임": [
+   "Heidenheim"
+  ],
+  "장크트파울": [
+   "St. Pauli"
+  ],
+  "함부르크": [
+   "Hamburger"
+  ],
+  "쾰른": [
+   "Koln",
+   "Köln"
+  ],
+  "홀슈타인": [
+   "Holstein Kiel"
+  ],
+  "파리생제르": [
+   "Paris Saint Germain",
+   "Paris SG"
+  ],
+  "PSG": [
+   "Paris Saint Germain",
+   "Paris SG"
+  ],
+  "마르세유": [
+   "Marseille"
+  ],
+  "모나코": [
+   "Monaco"
+  ],
+  "리옹": [
+   "Lyon"
+  ],
+  "릴": [
+   "Lille"
+  ],
+  "니스": [
+   "Nice"
+  ],
+  "랑스": [
+   "Lens"
+  ],
+  "렌": [
+   "Rennes"
+  ],
+  "스트라스부": [
+   "Strasbourg"
+  ],
+  "낭트": [
+   "Nantes"
+  ],
+  "툴루즈": [
+   "Toulouse"
+  ],
+  "브레스트": [
+   "Brest"
+  ],
+  "랭스": [
+   "Reims"
+  ],
+  "몽펠리에": [
+   "Montpellier"
+  ],
+  "르아브르": [
+   "Le Havre"
+  ],
+  "오세르": [
+   "Auxerre"
+  ],
+  "앙제": [
+   "Angers"
+  ],
+  "생테티엔": [
+   "Saint Etienne",
+   "St Etienne"
+  ],
+  "로리앙": [
+   "Lorient"
+  ],
+  "메스": [
+   "Metz"
+  ],
+  "파리FC": [
+   "Paris FC"
+  ],
+  "아약스": [
+   "Ajax"
+  ],
+  "PSV": [
+   "PSV",
+   "PSV Eindhoven"
+  ],
+  "페예노르트": [
+   "Feyenoord"
+  ],
+  "AZ알크마": [
+   "AZ Alkmaar"
+  ],
+  "트벤테": [
+   "Twente"
+  ],
+  "벤피카": [
+   "Benfica"
+  ],
+  "포르투": [
+   "FC Porto",
+   "Porto"
+  ],
+  "스포르팅": [
+   "Sporting CP",
+   "Sp Lisbon"
+  ],
+  "브라가": [
+   "Braga"
+  ],
+  "셀틱": [
+   "Celtic"
+  ],
+  "레인저스": [
+   "Rangers"
+  ],
+  "갈라타사": [
+   "Galatasaray"
+  ],
+  "페네르바": [
+   "Fenerbahce"
+  ],
+  "울산": [
+   "Ulsan"
+  ],
+  "울산HD": [
+   "Ulsan"
+  ],
+  "전북": [
+   "Jeonbuk"
+  ],
+  "포항": [
+   "Pohang"
+  ],
+  "FC서울": [
+   "FC Seoul"
+  ],
+  "서울": [
+   "FC Seoul"
+  ],
+  "수원FC": [
+   "Suwon City",
+   "Suwon FC"
+  ],
+  "수원삼성": [
+   "Suwon Bluewings"
+  ],
+  "강원": [
+   "Gangwon"
+  ],
+  "광주": [
+   "Gwangju"
+  ],
+  "대전": [
+   "Daejeon"
+  ],
+  "제주": [
+   "Jeju"
+  ],
+  "대구": [
+   "Daegu"
+  ],
+  "김천": [
+   "Gimcheon"
+  ],
+  "인천": [
+   "Incheon"
+  ],
+  "안양": [
+   "Anyang"
+  ],
+  "부산": [
+   "Busan"
+  ],
+  "전남": [
+   "Jeonnam"
+  ],
+  "부천": [
+   "Bucheon"
+  ],
+  "성남": [
+   "Seongnam"
+  ],
+  "경남": [
+   "Gyeongnam"
+  ],
+  "충남아산": [
+   "Asan"
+  ],
+  "김포": [
+   "Gimpo"
+  ],
+  "천안": [
+   "Cheonan"
+  ],
+  "충북청주": [
+   "Cheongju"
+  ],
+  "안산": [
+   "Ansan"
+  ],
+  "화성": [
+   "Hwaseong"
+  ],
+  "가시마": [
+   "Kashima"
+  ],
+  "우라와": [
+   "Urawa"
+  ],
+  "가와사키": [
+   "Kawasaki"
+  ],
+  "요코하마M": [
+   "Yokohama F. Marinos"
+  ],
+  "비셀고베": [
+   "Vissel Kobe"
+  ],
+  "고베": [
+   "Vissel Kobe"
+  ],
+  "감바오사카": [
+   "Gamba Osaka"
+  ],
+  "G오사카": [
+   "Gamba Osaka"
+  ],
+  "C오사카": [
+   "Cerezo Osaka"
+  ],
+  "나고야": [
+   "Nagoya"
+  ],
+  "산프레체": [
+   "Sanfrecce"
+  ],
+  "히로시마": [
+   "Sanfrecce"
+  ],
+  "FC도쿄": [
+   "FC Tokyo"
+  ],
+  "도쿄V": [
+   "Tokyo Verdy"
+  ],
+  "가시와": [
+   "Kashiwa"
+  ],
+  "마치다": [
+   "Machida"
+  ],
+  "세레소": [
+   "Cerezo Osaka"
+  ],
+  "후쿠오카": [
+   "Avispa Fukuoka"
+  ],
+  "교토": [
+   "Kyoto"
+  ],
+  "쇼난": [
+   "Shonan"
+  ],
+  "니가타": [
+   "Albirex Niigata"
+  ],
+  "삿포로": [
+   "Sapporo"
+  ],
+  "도스": [
+   "Sagan Tosu"
+  ],
+  "시미즈": [
+   "Shimizu"
+  ],
+  "요코하마FC": [
+   "Yokohama FC"
+  ],
+  "맨체스터유나이티드": [
+   "Manchester United",
+   "Man United"
+  ],
+  "맨체스터시티": [
+   "Manchester City",
+   "Man City"
+  ],
+  "아스톤빌라": [
+   "Aston Villa"
+  ],
+  "스타드렌": [
+   "Rennes"
+  ],
+  "올랭피크리옹": [
+   "Lyon"
+  ],
+  "레알베티스": [
+   "Real Betis"
+  ],
+  "웨스트브로미치": [
+   "West Brom"
+  ],
+  "셰필드유나이티드": [
+   "Sheffield Utd"
+  ],
+  "셰필드웬즈데이": [
+   "Sheffield Wednesday",
+   "Sheffield Weds"
+  ],
+  "리즈유나이티드": [
+   "Leeds"
+  ],
+  "노팅엄포레스트": [
+   "Nottingham",
+   "Nott'm Forest"
+  ],
+  "뉴캐슬유나이티드": [
+   "Newcastle"
+  ],
+  "브라이턴앤호브": [
+   "Brighton"
+  ],
+  "레스터시티": [
+   "Leicester"
+  ],
+  "바이에른뮌헨": [
+   "Bayern"
+  ],
+  "우니온베를린": [
+   "Union Berlin"
+  ],
+  "베르더브레멘": [
+   "Werder Bremen"
+  ],
+  "아우크스부르크": [
+   "Augsburg"
+  ],
+  "샬케": [
+   "Schalke"
+  ],
+  "파더보른": [
+   "Paderborn"
+  ],
+  "엘버스베르크": [
+   "Elversberg"
+  ],
+  "르망": [
+   "Le Mans"
+  ],
+  "트루아": [
+   "Troyes"
+  ],
+  "데포르티보": [
+   "Deportivo La Coruna",
+   "La Coruna"
+  ],
+  "말라가": [
+   "Malaga"
+  ],
+  "라싱산탄데르": [
+   "Racing Santander"
+  ],
+  "프로시노네": [
+   "Frosinone"
+  ],
+  "대전하나": [
+   "Daejeon"
+  ],
+  "김천상무": [
+   "Gimcheon"
+  ]
+ },
+ "leagues": {
+  "EPL": [
+   39
+  ],
+  "프리미어": [
+   39
+  ],
+  "챔피언십": [
+   40
+  ],
+  "EFL": [
+   40
+  ],
+  "잉글랜드": [
+   39,
+   40
+  ],
+  "FA컵": [
+   45
+  ],
+  "라리가": [
+   140
+  ],
+  "스페인": [
+   140
+  ],
+  "세리에": [
+   135
+  ],
+  "이탈리아": [
+   135
+  ],
+  "분데스": [
+   78
+  ],
+  "독일": [
+   78
+  ],
+  "리그앙": [
+   61
+  ],
+  "리그1": [
+   61
+  ],
+  "프랑스": [
+   61
+  ],
+  "에레디비": [
+   88
+  ],
+  "네덜란드": [
+   88
+  ],
+  "포르투갈": [
+   94
+  ],
+  "스코틀": [
+   179
+  ],
+  "UCL": [
+   2
+  ],
+  "챔스": [
+   2
+  ],
+  "UEL": [
+   3
+  ],
+  "유로파": [
+   3
+  ],
+  "UECL": [
+   848
+  ],
+  "컨퍼런스": [
+   848
+  ],
+  "K리그1": [
+   292
+  ],
+  "K리그2": [
+   293
+  ],
+  "K리그": [
+   292,
+   293
+  ],
+  "J1": [
+   98
+  ],
+  "J리그": [
+   98,
+   99
+  ],
+  "J2": [
+   99
+  ],
+  "MLS": [
+   253
+  ],
+  "A리그": [
+   188
+  ],
+  "호주": [
+   188
+  ]
+ }
 }

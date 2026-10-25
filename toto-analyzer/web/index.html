@@ -234,8 +234,8 @@ const esc = s => String(s ?? "").replace(/[&<>"']/g, c => ({"&":"&amp;","<":"&lt
 const won = n => Math.round(n).toLocaleString("ko-KR");
 const pct = p => p == null ? "-" : (p*100).toFixed(1) + "%";
 const todayStr = () => { const d = new Date(); return `${d.getFullYear()}-${String(d.getMonth()+1).padStart(2,"0")}-${String(d.getDate()).padStart(2,"0")}`; };
-const OUT_LABEL = {home:"승", draw:"무", away:"패", under:"언더", over:"오버"};
-const MARKET_LABEL = {"1x2":"일반", handicap:"핸디캡", uo:"언더오버"};
+const OUT_LABEL = {home:"승", draw:"무", away:"패", under:"언더", over:"오버", odd:"홀", even:"짝"};
+const MARKET_LABEL = {"1x2":"일반", handicap:"핸디캡", uo:"언더오버", sum:"SUM"};
 
 // ---------- 붙여넣기 파서 (collector/betman_parser.py 와 같은 규칙) ----------
 const ODDS_RE = /^\d{1,3}\.\d{2}$/;
@@ -365,6 +365,10 @@ function marketModel(mdl, market, line){
     const under = fromMatrix(mdl.m, (i,j) => i + j < line);
     return {under, over: 1 - under};
   }
+  if(market === "sum"){
+    const even = fromMatrix(mdl.m, (i,j) => (i + j) % 2 === 0); // 0골은 짝
+    return {odd: 1 - even, even};
+  }
   if(market === "handicap" && line != null){
     const r = {home: fromMatrix(mdl.m,(i,j)=>i+line>j), draw: fromMatrix(mdl.m,(i,j)=>i+line===j), away: fromMatrix(mdl.m,(i,j)=>i+line<j)};
     return Number.isInteger(line) ? normalize(r) : normalize({home:r.home, away:r.away});
@@ -435,7 +439,7 @@ function renderMatches(){
       M.toto ? `<span class="chip warn">승무패 ${M.toto.no}</span>` : "",
       M.fx ? (M.mdl ? `<span class="chip good">분석 데이터</span>` : `<span class="chip">통계 부족</span>`) : `<span class="chip bad">분석 데이터 없음</span>`,
       M.fx && M.fx.lineups && M.fx.lineups.length ? `<span class="chip good">라인업 발표</span>` : "",
-      best && best.ev > 0 ? `<span class="chip good">EV+ ${MARKET_LABEL[best.mk.market]} ${OUT_LABEL[best.o]} ${(best.ev*100).toFixed(0)}%</span>` : "",
+      best && best.ev > 0 ? `<span class="chip good">EV+ ${MARKET_LABEL[best.mk.market]} ${OUT_LABEL[best.o]} +${(best.ev*100).toFixed(1)}%</span>` : "",
     ].join("");
     return `<div class="card match" data-key="${esc(M.key)}">
       <div class="row"><span class="teams grow">${esc(M.home)} <span class="muted">vs</span> ${esc(M.away)}</span><span class="muted">${esc((M.kickoff||"").replace("T"," ").slice(5))}</span></div>
@@ -458,7 +462,7 @@ function detailHtml(M){
     h += `</table></div><p class="muted">배당 마진(수수료) 약 ${(M.markets[0].margin*100).toFixed(0)}%. EV는 1,000원 걸었을 때 기대 손익 비율입니다.</p>`;
   }
   if(M.toto) h += `<p class="muted">승무패 확률 근거: ${esc(M.toto.src)}${M.toto.votes ? ` · 투표율 승 ${M.toto.votes.home}% 무 ${M.toto.votes.draw}% 패 ${M.toto.votes.away}%` : ""}</p>`;
-  if(M.how) h += `<p class="muted">경기 연결: ${esc(M.how)}${M.fx ? ` (${esc(M.fx.home.name)} vs ${esc(M.fx.away.name)}, ${esc(M.fx.league)})` : ""}</p>`;
+  if(M.how) h += `<p class="muted">경기 연결: ${esc(M.how)}${M.fx ? ` (${esc(M.fx.home.name)} vs ${esc(M.fx.away.name)}, ${esc(M.fx.league)}) · 출처 ${esc(M.fx.source || "API-Football")}` : ""}</p>`;
   const mdl = M.mdl, fx = M.fx;
   if(mdl){
     h += `<h3>분석 근거</h3><ul>${mdl.notes.map(n => `<li>${esc(n)}</li>`).join("")}
@@ -476,7 +480,8 @@ function detailHtml(M){
       const inj = (fx.injuries || []).filter(i => i.team_id === t.id);
       const lu = (fx.lineups || []).find(l => l.team_id === t.id);
       h += `<div><h3>${esc(t.name)}</h3>`;
-      if(pr){ const s = pr[side]; h += `<div class="muted">최근5 폼 ${s.last5.form ?? "-"}% · 공격 ${s.last5.att ?? "-"}% · 수비 ${s.last5.def ?? "-"}%<br>경기당 득점 ${s.gf.total ?? "-"} / 실점 ${s.ga.total ?? "-"}</div>`; }
+      if(pr){ const s = pr[side]; h += `<div class="muted">최근5 ${esc(s.form.slice(-5) || "-")} (승점률 ${s.last5.form ?? "-"}%)${s.last5.att != null ? ` · 공격 ${s.last5.att}% · 수비 ${s.last5.def}%` : ""}<br>경기당 득점 ${s.gf.total ?? "-"} / 실점 ${s.ga.total ?? "-"} (홈 ${s.gf.home ?? "-"}/${s.ga.home ?? "-"}, 원정 ${s.gf.away ?? "-"}/${s.ga.away ?? "-"})</div>`; }
+      if(M.fx.source === "football-data.co.uk"){ h += `<div class="muted">부상·라인업: API 키가 있어야 제공됩니다</div></div>`; continue; }
       h += inj.length ? `<div>결장·부상: ${inj.map(i => `<span class="chip ${/missing/i.test(i.type||"") ? "bad" : "warn"}">${esc(i.player)} (${esc(i.reason || i.type)})</span>`).join("")}</div>` : `<div class="muted">부상·결장 정보 없음</div>`;
       h += lu ? `<div class="muted">라인업 ${esc(lu.formation || "")}: ${lu.xi.map(x => esc(x.name)).join(", ")}</div>` : `<div class="muted">라인업 미발표 (보통 킥오프 20~40분 전)</div>`;
       h += `</div>`;
