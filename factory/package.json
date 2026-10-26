@@ -1,0 +1,28 @@
+{
+  "name": "ghost-source-factory",
+  "version": "0.1.0",
+  "private": true,
+  "description": "Unmanned factory that finds abandoned permissive-licensed open-source projects, scores them, and plans their modernization into SaaS products / APIs.",
+  "type": "module",
+  "engines": {
+    "node": ">=22.13"
+  },
+  "scripts": {
+    "factory": "node --disable-warning=ExperimentalWarning --import tsx src/cli.ts",
+    "scan": "npm run factory -- scan",
+    "plan": "npm run factory -- plan",
+    "run:pipeline": "npm run factory -- run",
+    "status": "npm run factory -- status",
+    "typecheck": "tsc --noEmit",
+    "test": "node --disable-warning=ExperimentalWarning --import tsx --test tests/*.test.ts"
+  },
+  "dependencies": {
+    "@anthropic-ai/sdk": "^1.3.0",
+    "zod": "^4.6.7"
+  },
+  "devDependencies": {
+    "@types/node": "^22.20.5",
+    "tsx": "^4.23.15",
+    "typescript": "^5.9.3"
+  }
+}
